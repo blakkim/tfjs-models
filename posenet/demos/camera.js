@@ -19,7 +19,7 @@ import '@tensorflow/tfjs-backend-webgl';
 import dat from 'dat.gui';
 import Stats from 'stats.js';
 
-import {drawBoundingBox, drawKeypoints, drawSkeleton, isMobile, toggleLoadingUI, tryResNetButtonName, tryResNetButtonText, updateTryResNetButtonDatGuiCss} from './demo_util';
+import {drawBoundingBox, drawKeypoints, drawSkeleton, drawFaceMasking, isMobile, toggleLoadingUI, tryResNetButtonName, tryResNetButtonText, updateTryResNetButtonDatGuiCss} from './demo_util';
 
 const videoWidth = 600;
 const videoHeight = 500;
@@ -68,14 +68,14 @@ const defaultQuantBytes = 2;
 
 const defaultMobileNetMultiplier = isMobile() ? 0.50 : 0.75;
 const defaultMobileNetStride = 16;
-const defaultMobileNetInputResolution = 500;
+const defaultMobileNetInputResolution = 200;
 
 const defaultResNetMultiplier = 1.0;
 const defaultResNetStride = 32;
 const defaultResNetInputResolution = 250;
 
 const guiState = {
-  algorithm: 'multi-pose',
+  algorithm: 'single-pose',
   input: {
     architecture: 'MobileNetV1',
     outputStride: defaultMobileNetStride,
@@ -98,6 +98,7 @@ const guiState = {
     showSkeleton: true,
     showPoints: true,
     showBoundingBox: false,
+    showFaceMasking: false
   },
   net: null,
 };
@@ -253,6 +254,7 @@ function setupGui(cameras, net) {
   output.add(guiState.output, 'showSkeleton');
   output.add(guiState.output, 'showPoints');
   output.add(guiState.output, 'showBoundingBox');
+  output.add(guiState.output, 'showFaceMasking');
   output.open();
 
 
@@ -434,6 +436,9 @@ function detectPoseInRealTime(video, net) {
         }
         if (guiState.output.showBoundingBox) {
           drawBoundingBox(keypoints, ctx);
+        }
+        if (guiState.output.showFaceMasking) {
+          drawFaceMasking(keypoints, minPartConfidence, ctx);
         }
       }
     });

@@ -141,6 +141,22 @@ export function drawBoundingBox(keypoints, ctx) {
 }
 
 /**
+ * Draw the face masking.
+ */
+export function drawFaceMasking(keypoints, minConfidence, ctx) {
+  const nosepoint = keypoints[0];
+  const centerpoint = {x: (nosepoint.position.x + keypoints[3].position.x + keypoints[4].position.x)/3,
+    y: (nosepoint.position.y + keypoints[3].position.y + keypoints[4].position.y)/3};
+
+  const size = Math.min(((Math.max(nosepoint.position.x, keypoints[3].position.x, keypoints[4].position.x)
+   - Math.min(nosepoint.position.x, keypoints[3].position.x, keypoints[4].position.x))**2
+    + (Math.max(nosepoint.position.y, keypoints[3].position.y, keypoints[4].position.y)
+     - Math.min(nosepoint.position.y, keypoints[3].position.y, keypoints[4].position.y))**2)**0.5 - 30, 150);
+
+  drawPoint(ctx, centerpoint.y, centerpoint.x, size, color);
+}
+
+/**
  * Converts an arary of pixel data into an ImageData object
  */
 export async function renderToCanvas(a, ctx) {
